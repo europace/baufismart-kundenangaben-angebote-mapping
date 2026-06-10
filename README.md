@@ -2,18 +2,18 @@
 
 Tools and helper scripts for working with the BaufiSmart Kundenangaben API and Angebote API.
 
-See:
+📖 See:
 [baufismart-kundenangaben-api](https://github.com/europace/baufismart-kundenangaben-api)
 and [baufismart-angebote-api](https://github.com/europace/baufismart-angebote-api)
 
 
-## Helper Scripts 
+## 🛠️ Helper Scripts
 
-`list-kundenangaben-field-types.sh`
+### 📋 `list-kundenangaben-field-types.sh`
 
 Downloads the Kundenangaben OpenAPI spec and prints every leaf field path with its type.
 
-### Usage
+#### ▶️ Usage
 
 ```bash
 # Download the latest spec and print all fields
@@ -23,7 +23,7 @@ Downloads the Kundenangaben OpenAPI spec and prints every leaf field path with i
 ./list-kundenangaben-field-types.sh path/to/kundenangaben-openapi.json
 ```
 
-### Output format
+#### 📄 Output format
 
 Each line is `<path>=<type>`:
 
@@ -34,13 +34,15 @@ kundenangaben.haushalte[].kunden[].wohnsituation.voranschrift.ort=string
 kundenangaben.finanzierungsbedarf.externeBausparangebote[].bausparkasse=enum(AACHENER_BAUSPARKASSE, ...)
 ```
 
-- `[]` denotes array items
-- `enum(...)` lists all allowed values
-- `(discriminator)` marks polymorphic type discriminator fields
-- `(cycle)` marks a recursive reference that was cut off
+| Symbol | Meaning |
+|--------|---------|
+| `[]` | Array items |
+| `enum(...)` | Enumeration with all allowed values |
+| `(discriminator)` | Polymorphic type discriminator field |
+| `(cycle)` | Recursive reference that was cut off |
 
 The spec is downloaded from the [baufismart-kundenangaben-api](https://github.com/europace/baufismart-kundenangaben-api) repository and cached locally as `kundenangaben.json`.
 
-### Requirements
+#### ⚙️ Requirements
 
-Python 3 (stdlib only, no dependencies).
+🐍 Python 3 (stdlib only, no dependencies).

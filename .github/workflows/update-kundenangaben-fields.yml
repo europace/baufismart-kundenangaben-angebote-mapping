@@ -1,0 +1,46 @@
+name: Update Kundenangaben field types if source file changed
+
+on:
+  schedule:
+    # Run once a day at 04:00 UTC
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get current SHA of upstream file
+        id: upstream
+        run: |
+          SHA=$(curl -s "https://api.github.com/repos/europace/baufismart-kundenangaben-api/contents/kundenangaben-openapi.json" \
+            -H "Accept: application/vnd.github+json" \
+            | jq -r '.sha')
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Get last known SHA
+        id: known
+        run: |
+          if [ -f .kundenangaben-openapi-sha ]; then
+            echo "sha=$(cat .kundenangaben-openapi-sha)" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run script if SHA changed
+        if: steps.upstream.outputs.sha != steps.known.outputs.sha
+        run: |
+          python3 list-kundenangaben-field-types.sh > kundenangaben-types.properties
+          echo "${{ steps.upstream.outputs.sha }}" > .kundenangaben-openapi-sha
+
+      - name: Commit updated output
+        if: steps.upstream.outputs.sha != steps.known.outputs.sha
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add kundenangaben-types.properties .kundenangaben-openapi-sha
+          git commit -m "chore: update kundenangaben field types (upstream SHA ${{ steps.upstream.outputs.sha }})"
+          git push
